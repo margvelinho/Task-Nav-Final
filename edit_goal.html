@@ -270,7 +270,13 @@
             margin: 5px 0;
             color: #666;
         }
-
+        .d-none {
+    display: none;
+}
+.btn-custom:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
         @media (max-width: 768px) {
             .btn-group {
                 flex-direction: column;
@@ -372,9 +378,10 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn-custom btn-update">
-                        <i class="bi bi-check-circle"></i>
-                        Update Goal
+                    <button type="submit" id="submitBtn" class="btn-custom btn-update">
+                        <span class="spinner spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                        <i class="bi bi-check-circle d-none"></i>
+                        <span class="btn-text">Update Goal</span>
                     </button>
                     <a href="/view-goal/{{ goal.id }}" class="btn-custom btn-cancel">
                         <i class="bi bi-x-circle"></i>
@@ -385,6 +392,21 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelector('form[method="POST"]').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    const checkIcon = submitBtn.querySelector('.bi-check-circle');
+    const btnText = submitBtn.querySelector('.btn-text');
+    
+    // Show spinner and disable button
+    spinner.classList.remove('d-none');
+    checkIcon.classList.add('d-none');
+    btnText.textContent = 'Updating...';
+    submitBtn.disabled = true;
+
+});
+</script>
 </body>
 </html>
