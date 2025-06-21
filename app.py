@@ -3,12 +3,15 @@ import sqlite3
 import datetime
 import json
 import re
-import requests  # Added for OpenRouter API calls
+import requests 
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = '8286414385fcf859f44ee8fbaf9e1fab'
 
-OPENROUTER_API_KEY = "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"  # Replace with your actual key
+OPENROUTER_API_KEY= os.getenv("API_KEY")  
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 def query_openrouter_ai(prompt):
@@ -40,7 +43,7 @@ Continue this exact pattern. Each PERIOD must have exactly 3 TASKs and each TASK
         }
         
         payload = {
-            "model": "meta-llama/llama-3-70b-instruct",  # Using LLaMA 3 70B on OpenRouter
+            "model": "meta-llama/llama-3-70b-instruct",  
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
