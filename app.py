@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = '8286414385fcf859f44ee8fbaf9e1fab'
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 OPENROUTER_API_KEY= os.getenv("API_KEY")  
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
