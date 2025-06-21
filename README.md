@@ -11,9 +11,7 @@ cd TaskNav
 Enter this in the Terminal: pip install python-dotenv
 
 
-2. Install Dependencies
-Make sure you have Python installed, then run:
-pip install -r requirements.txt
+Make sure you have Python installed
 
 3. Set Up Environment Variables
 Create a .env file in the root directory and add your OpenRouter API key like this:
