@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Details - TaskNav</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .nav-link.active{
+            color: black !important;
+            font-weight: bold !important;            
+        }
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: rgba(0, 49, 83, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            margin: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .navbar-brand {
+            position: absolute;
+            color: white;
+            left: 20px;
+            top: 8px;
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff, #e8f4f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .navbar-nav {
+            margin-right: 20px; 
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            font-size: 16px;
+            margin: 0 8px;
+            padding: 8px 16px !important;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        .navbar-toggler {
+    border: none;
+    background: none;
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 16px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    left: 0;
+    transition: all 0.3s;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler-icon::after {
+    top: 8px;
+}
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .goal-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .goal-title {
+            color: rgb(0, 49, 83);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .goal-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .meta-icon {
+            color: rgb(0, 120, 175);
+            font-size: 18px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .meta-value {
+            color: #666;
+        }
+
+        .goal-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-paused {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .study-plan-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: rgb(0, 49, 83);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #e9ecef, rgb(0, 120, 175));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #dee2e6;
+        }
+
+        .timeline-item.completed {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -41px;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .period-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .period-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .period-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .period-checkbox.completed {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .period-checkbox:hover {
+            border-color: #28a745;
+            transform: scale(1.05);
+        }
+
+        .period-title {
+            color: rgb(0, 49, 83);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .period-date {
+            color: #666;
+            font-size: 14px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .period-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .period-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .period-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 39px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            color: #555;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            color: #333;
+        }
+
+        .timeline-item.completed .task-item {
+            color: #666;
+        }
+
+        .progress-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .progress-bar-container {
+            background: #e9ecef;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: rgb(0, 49, 83);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-action {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, rgb(0, 120, 175), rgb(0, 49, 83));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 120, 175, 0.3);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+
+        .btn-warning-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+            color: white;
+        }
+
+        .btn-danger-custom {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-danger-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+            color: white;
+        }
+
+        .checkbox-form {
+            display: inline-block;
+        }
+
+        .checkbox-form button {
+            background: none;
+            border: none;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-form.completed button {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .checkbox-form button:hover {
+            border-color: #28a745;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .goal-meta-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-container {
+                padding-left: 20px;
+            }
+            
+            .timeline-dot {
+                left: -31px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .period-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .period-title-container {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="/welcome">TaskNav</a>
+
+        
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/main"><i class="bi bi-plus-circle"></i> Create goal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/my-goals"><i class="bi bi-list-check"></i> My goals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile"><i class="bi bi-person-lines-fill"></i> {{username}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="main-container">
+        <div class="goal-header">
+            <h1 class="goal-title">{{ goal.goal_text }}</h1>
+            
+            <div class="goal-meta-grid">
+                <div class="meta-item">
+                    <i class="bi bi-calendar-event meta-icon"></i>
+                    <div>
+                        <div class="meta-label">Deadline</div>
+                        <div class="meta-value">{{ goal.deadline }}</div>
+                    </div>
+                </div>
+                
+                <div class="meta-item">
+                    <i class="bi bi-clock meta-icon"></i>
+                    <div>
+                        <div class="meta-label">Days Remaining</div>
+                        <div class="meta-value">{{ goal.days_remaining }} days</div>
+                    </div>
+                </div>
+                
+                <div class="meta-item">
+                    <i class="bi bi-arrow-repeat meta-icon"></i>
+                    <div>
+                        <div class="meta-label">Frequency</div>
+                        <div class="meta-value">{{ goal.period.title() }}</div>
+                    </div>
+                </div>
+                
+                <div class="meta-item">
+                    <i class="bi bi-flag meta-icon"></i>
+                    <div>
+                        <div class="meta-label">Status</div>
+                        <span class="goal-status status-{{ goal.status }}">{{ goal.status.title() }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if goal.timeline_data %}
+        <div class="progress-section">
+            <h3 class="section-title">
+                <i class="bi bi-graph-up"></i>
+                Progress Overview
+            </h3>
+            
+            {% set total_periods = goal.timeline_data|length %}
+            {% set completed_periods = goal.timeline_data|count_completed_periods %}
+            
+            {% set completion_percentage = ((completed_periods / total_periods) * 100)|round|int if total_periods > 0 else 0 %}
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: {{ completion_percentage }}%"></div>
+            </div>
+            
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ completion_percentage }}%</span>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ completed_periods }}</span>
+                    <div class="stat-label">Periods Done</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ total_periods }}</span>
+                    <div class="stat-label">Total Periods</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ goal.period.title() }}</span>
+                    <div class="stat-label">Frequency</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if goal.timeline_data %}
+        <div class="study-plan-section">
+            <h3 class="section-title">
+                <i class="bi bi-list-check"></i>
+                Timeline
+            </h3>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                {% for period in goal.timeline_data %}
+                <div class="timeline-item {{ 'completed' if period.completed else '' }}">
+                    <div class="timeline-dot"></div>
+                    
+                    <div class="period-header">
+                        <div class="period-title-container">
+                            <form class="checkbox-form {{ 'completed' if period.completed else '' }}" method="POST" action="/toggle-period/{{ goal.id }}/{{ period.period_number }}">
+                                <button type="submit">
+                                    {% if period.completed %}
+                                    <i class="bi bi-check"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <div>
+                                <h4 class="period-title">{{ period.period_label }}</h4>
+                                <div class="period-date">{{ period.period_date }}</div>
+                            </div>
+                        </div>
+                        <span class="period-status {{ 'period-completed' if period.completed else 'period-pending' }}">
+                            {{ 'Completed' if period.completed else 'In Progress' }}
+                        </span>
+                    </div>
+                    
+                    <ul class="task-list">
+                        {% for task in period.tasks %}
+                        <li class="task-item">
+                            <i class="bi bi-dot" style="color: #dee2e6; font-size: 12px; margin-right: 8px;"></i>
+                            <div>{{ task.text }}</div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="study-plan-section">
+            <h3 class="section-title">
+                <i class="bi bi-book"></i>
+                Study Plan
+            </h3>
+            <div style="white-space: pre-line; line-height: 1.6; color: #555;">
+                {{ goal.study_plan }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="/my-goals" class="btn-action btn-primary-custom">
+                <i class="bi bi-arrow-left"></i>
+                Back to Goals
+            </a>
+            
+            {% if goal.status == 'active' %}
+            <a href="/update-goal-status/{{ goal.id }}/completed" class="btn-action btn-success-custom">
+                <i class="bi bi-check-circle"></i>
+                Mark as Completed
+            </a>
+            <a href="/update-goal-status/{{ goal.id }}/paused" class="btn-action btn-warning-custom">
+                <i class="bi bi-pause-circle"></i>
+                Pause Goal
+            </a>
+            {% elif goal.status == 'paused' %}
+            <a href="/update-goal-status/{{ goal.id }}/active" class="btn-action btn-primary-custom">
+                <i class="bi bi-play-circle"></i>
+                Resume Goal
+            </a>
+            <a href="/update-goal-status/{{ goal.id }}/completed" class="btn-action btn-success-custom">
+                <i class="bi bi-check-circle"></i>
+                Mark as Completed
+            </a>
+            {% elif goal.status == 'completed' %}
+            <a href="/update-goal-status/{{ goal.id }}/active" class="btn-action btn-primary-custom">
+                <i class="bi bi-arrow-clockwise"></i>
+                Reactivate Goal
+            </a>
+            {% endif %}
+
+            <a href="/edit-goal/{{ goal.id }}" class="btn-action btn-primary-custom">
+                <i class="bi bi-pencil-square"></i>
+                Edit Goal
+            </a>            
+            
+            <form method="POST" action="/delete-goal/{{ goal.id }}" style="display: inline;" >
+                <button type="submit" class="btn-action btn-danger-custom">
+                    <i class="bi bi-trash"></i>
+                    Delete Goal
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

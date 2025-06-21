@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskNav - About Us</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/welcome-nav.css">
+    <style>
+        
+        .nav-link.active{
+            color: black !important;
+            font-weight: bold !important;            
+        }
+.navbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: rgba(0, 49, 83);
+    backdrop-filter: blur(10px);
+    padding: 12px 0;
+    margin: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+        .navbar-brand {
+    position: absolute;
+    color: white;
+    left: 20px;
+    top: 8px;
+    font-size: 28px;
+    font-weight: 800;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff, #e8f4f8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+        }
+        
+        
+        .navbar-nav {
+            margin-right: 20px; 
+        }
+        
+        .nav-link {
+    color: white !important;
+    font-weight: 500;
+    font-size: 16px;
+    margin: 0 8px;
+    padding: 8px 16px !important;
+    border-radius: 25px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        .navbar-toggler {
+    border: none;
+    background: none;
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 16px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    left: 0;
+    transition: all 0.3s;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler-icon::after {
+    top: 8px;
+}
+        
+        body {
+    background-color: #f8f9fa;
+    padding-top: 56px;
+    margin: 0; 
+        }
+        
+        .container-fluid {
+            background-color: rgb(0,49,83);
+            padding: 0; 
+        }
+        
+        .color-white {
+            color: white;
+        }
+        
+        .team-member {
+            margin-bottom: 30px;
+        }
+        
+        .team-member img {
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .team-member img:hover {
+            transform: scale(1.05);
+        }
+        
+        .team-member h4 {
+            margin-top: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .team-member p.role {
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .value-card {
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .value-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .value-card .card-body {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .value-card .value-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 50px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: black;
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .timeline-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 45%;
+            position: relative;
+        }
+        
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: greenyellow;
+            border-radius: 50%;
+            border: 4px solid black;
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            float: left;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            right: -50px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            float: right;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content::after {
+            left: -50px;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        
+        .contact-section {
+            background-color: #f0fff0;
+            padding: 80px 0;
+            border-radius: 15px;
+            margin: 50px 0;
+        }
+        
+        .testimonial {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .testimonial img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid greenyellow;
+        }
+        
+        footer {
+            background-color: black;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 24px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: greenyellow;
+        }
+        
+        .about-us-text {
+            color: white;
+        }
+        
+        .btn-primary {
+            background-color: rgb(0,49,83);
+            border-color: rgb(0,49,83);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: rgb(0,60,100);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="/">TaskNav</a>
+
+        
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="about"><i class="bi bi-people me-1"></i>About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register"><i class="bi bi-person-plus me-1"></i>Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container-fluid text-center py-5 mt-0" style="background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);">
+        <h1 class="display-4 color-white">Our Story</h1>
+        <p class="lead mx-auto about-us-text" style="max-width: 700px;">Our platform is built to help individuals and organizations accomplish complex goals through structured planning and intelligent progress tracking. 
+        Users simply define a task — whether it's learning a skill, completing a project, or achieving a milestone — and receive a tailored plan with actionable steps. 
+        As users progress, our system adapts, providing timely support and updates to ensure success.</p>
+    </div>
+
+    <div class="container my-5" >
+        <h2 class="text-center mb-5">Our Values</h2>
+        <div class="row g-4" >
+            <div class="col-md-4" >
+                <div class="card value-card" style="background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);">
+                    <div class="card-body" >
+                        <div class="value-icon">📌</div>
+                        <h3 class="color-white">Purposeful Planning</h3>
+                        <p class="color-white">We help users break big goals into small, achievable tasks with clarity and purpose.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card value-card">
+                    <div class="card-body" style="background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);">
+                        <div class="value-icon">📈</div>
+                        <h3 class="color-white">Progress-Driven</h3>
+                        <p class="color-white">We track progress, highlight improvements, and keep users focused and motivated throughout their journey.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card value-card">
+                    <div class="card-body" style="background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);">
+                        <div class="value-icon">🤝</div>
+                        <h3 class="color-white">Adaptive Support</h3>
+                        <p class="color-white">The system offers smart suggestions and adjusts based on user behavior, making the path to completion smoother.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-5">Our Journey</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>2023</h3>
+                    <p>The concept was formed: build a tool that helps people complete their goals through structured guidance.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>2024</h3>
+                    <p>We launched the first version of our productivity platform, helping users generate task plans and track progress.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>2025</h3>
+                    <p>We have grown to support thousands of users, empowering them to finish projects, learn faster, and reach new goals efficiently.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-5">Meet Our Team</h2>
+        <div class="row text-center">
+            <div class="col-md-4 team-member">
+                <img src="/static/team2.jpg" alt="Sarah Johnson">
+                <h4>Sarah Johnson</h4>
+                <p class="role">Founder & CEO</p>
+                <p>Sarah leads the vision of empowering individuals and teams through smart planning and goal management tools.</p>
+            </div>
+            <div class="col-md-4 team-member">
+                <img src="/static/team1.jpg" alt="Michael Chen">
+                <h4>Michael Chen</h4>
+                <p class="role">CTO</p>
+                <p>Michael oversees product development, ensuring our platform adapts intelligently to user progress and feedback.</p>
+            </div>
+            <div class="col-md-4 team-member">
+                <img src="/static/team3.jpg" alt="Alex Rivera">
+                <h4>Alex Rivera</h4>
+                <p class="role">Head of Design</p>
+                <p>Alex ensures a clean, intuitive interface that makes planning and productivity feel effortless.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-5">What Our Users Say</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="testimonial d-flex">
+                    <div>
+                        <h5>Jessica T.</h5>
+                        <p>"This platform helped me break down a large personal project into small steps and actually finish it — without feeling overwhelmed."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="testimonial d-flex">
+                    <div>
+                        <h5>Marcus W.</h5>
+                        <p>"I stayed accountable and focused while learning a new skill. The weekly progress feedback was incredibly helpful."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+    <div class="contact-section" style="background-color: #f8f9fa; border: 2px solid #ffffff; border-radius: 10px; padding: 20px;">
+        <div class="row">
+            <div class="col-md-6" style="border-right: 1px solid #ccc;">
+                <h2 class="mb-4">Get In Touch</h2>
+                <p>Have questions or feedback? We'd love to hear from you!</p>
+                <p><strong>Email:</strong> gmtn@gmail.com</p>
+                <p><strong>Address:</strong> Mziuri</p>
+            </div>
+            <div class="col-md-6">
+                <form action="/submit" method="POST" style="padding-left: 15px;">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="name" placeholder="Your Name" style="border: 1px solid #ccc;">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" name="email" placeholder="Your Email" style="border: 1px solid #ccc;">
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="message" rows="4" placeholder="Your Message" style="border: 1px solid #ccc;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <footer>
+        <div class="container">
+            <div class="social-icons mb-4">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <p>&copy; 2025 TaskNav. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

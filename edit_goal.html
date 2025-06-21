@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Goal - TaskNav</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, rgb(0,49,83) 0%, rgb(0,60,100) 50%, rgb(0,49,83) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .nav-link.active{
+            color: black !important;
+            font-weight: bold !important;            
+        }
+
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: rgba(0, 49, 83, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            margin: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            position: absolute;
+            color: white;
+            left: 20px;
+            top: 8px;
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff, #e8f4f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .navbar-nav {
+            margin-right: 20px; 
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            font-size: 16px;
+            margin: 0 8px;
+            padding: 8px 16px !important;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .navbar-toggler {
+    border: none;
+    background: none;
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 16px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+    left: 0;
+    transition: all 0.3s;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler-icon::after {
+    top: 8px;
+}
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .edit-form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            color: rgb(0, 49, 83);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .form-title i {
+            color: rgb(0, 120, 175);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: rgb(0, 49, 83);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: rgb(0, 120, 175);
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: rgb(0, 120, 175);
+            box-shadow: 0 0 0 0.2rem rgba(0, 120, 175, 0.25);
+        }
+
+        .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 16px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: rgb(0, 120, 175);
+            box-shadow: 0 0 0 0.2rem rgba(0, 120, 175, 0.25);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-custom {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+            color: white;
+        }
+
+        .current-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid rgb(0, 120, 175);
+        }
+
+        .current-info h5 {
+            color: rgb(0, 49, 83);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .current-info h5 i {
+            color: rgb(0, 120, 175);
+        }
+
+        .current-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .main-container {
+                padding: 80px 15px 30px;
+            }
+
+            .edit-form-container {
+                padding: 25px;
+            }
+
+            .form-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="/welcome">TaskNav</a>
+
+        
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/main"><i class="bi bi-plus-circle"></i> Create goal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/my-goals"><i class="bi bi-list-check"></i> My goals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile"><i class="bi bi-person-lines-fill"></i> {{username}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="main-container">
+        <div class="edit-form-container">
+            <h1 class="form-title">
+                <i class="bi bi-pencil-square"></i>
+                Edit Goal
+            </h1>
+
+            <div class="current-info">
+                <h5><i class="bi bi-info-circle"></i> Current Goal Information</h5>
+                <p><strong>Goal:</strong> {{ goal.goal_text }}</p>
+                <p><strong>Deadline:</strong> {{ goal.deadline }}</p>
+                <p><strong>Frequency:</strong> {{ goal.period.title() }}</p>
+                <p><strong>Status:</strong> {{ goal.status.title() }}</p>
+            </div>
+
+            <form method="POST" action="/update-goal/{{ goal.id }}">
+                <div class="form-group">
+                    <label for="goal" class="form-label">
+                        <i class="bi bi-target"></i> Goal Description
+                    </label>
+                    <textarea 
+                        class="form-control" 
+                        id="goal" 
+                        name="goal" 
+                        rows="3" 
+                        placeholder="What do you want to achieve?"
+                        required>{{ goal.goal_text }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="deadline" class="form-label">
+                        <i class="bi bi-calendar-event"></i> Target Deadline
+                    </label>
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="deadline" 
+                        name="deadline" 
+                        value="{{ goal.deadline }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="period" class="form-label">
+                        <i class="bi bi-arrow-repeat"></i> Study Frequency
+                    </label>
+                    <select class="form-select" id="period" name="period" required>
+                        <option value="daily" {% if goal.period == 'daily' %}selected{% endif %}>Daily</option>
+                        <option value="weekly" {% if goal.period == 'weekly' %}selected{% endif %}>Weekly</option>
+                        <option value="monthly" {% if goal.period == 'monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="yearly" {% if goal.period == 'yearly' %}selected{% endif %}>Yearly</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-custom btn-update">
+                        <i class="bi bi-check-circle"></i>
+                        Update Goal
+                    </button>
+                    <a href="/view-goal/{{ goal.id }}" class="btn-custom btn-cancel">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
