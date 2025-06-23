@@ -90,44 +90,44 @@
             transform: scale(1.05);
         }
         .navbar-toggler {
-    border: none;
-    background: none;
-    color: white;
-    font-size: 1.5rem;
-    margin-right: 16px;
-}
+            border: none;
+            background: none;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 16px;
+        }
 
-.navbar-toggler:focus {
-    box-shadow: none;
-}
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
 
-.navbar-toggler-icon {
-    background-image: none;
-    display: inline-block;
-    width: 24px;
-    height: 2px;
-    background-color: white;
-    position: relative;
-}
+        .navbar-toggler-icon {
+            background-image: none;
+            display: inline-block;
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            position: relative;
+        }
 
-.navbar-toggler-icon::before,
-.navbar-toggler-icon::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 2px;
-    background-color: white;
-    left: 0;
-    transition: all 0.3s;
-}
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            left: 0;
+            transition: all 0.3s;
+        }
 
-.navbar-toggler-icon::before {
-    top: -8px;
-}
+        .navbar-toggler-icon::before {
+            top: -8px;
+        }
 
-.navbar-toggler-icon::after {
-    top: 8px;
-}
+        .navbar-toggler-icon::after {
+            top: 8px;
+        }
 
         .main-container {
             max-width: 1000px;
@@ -225,12 +225,12 @@
 
         .timeline-container {
             position: relative;
-            padding-left: 30px;
+            padding-left: 10px;
         }
 
         .timeline-line {
             position: absolute;
-            left: 15px;
+            left: 0;
             top: 0;
             bottom: 0;
             width: 3px;
@@ -256,23 +256,6 @@
         .timeline-item:hover {
             transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -41px;
-            top: 20px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fff;
-            border: 3px solid #dee2e6;
-            transition: all 0.3s ease;
-        }
-
-        .timeline-item.completed .timeline-dot {
-            background: #28a745;
-            border-color: #28a745;
         }
 
         .period-header {
@@ -350,7 +333,6 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            margin-left: 39px;
         }
 
         .task-item {
@@ -526,11 +508,7 @@
             }
             
             .timeline-container {
-                padding-left: 20px;
-            }
-            
-            .timeline-dot {
-                left: -31px;
+                padding-left: 10px;
             }
             
             .action-buttons {
@@ -552,30 +530,29 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid px-3">
-        <a class="navbar-brand" href="/welcome">TaskNav</a>
+        <div class="container-fluid px-3">
+            <a class="navbar-brand" href="/welcome">TaskNav</a>
 
-        
-        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/main"><i class="bi bi-plus-circle"></i> Create goal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/my-goals"><i class="bi bi-list-check"></i> My goals</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/profile"><i class="bi bi-person-lines-fill"></i> {{username}}</a>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/main"><i class="bi bi-plus-circle"></i> Create goal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/my-goals"><i class="bi bi-list-check"></i> My goals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile"><i class="bi bi-person-lines-fill"></i> {{username}}</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <div class="main-container">
         <div class="goal-header">
@@ -665,8 +642,6 @@
                 
                 {% for period in goal.timeline_data %}
                 <div class="timeline-item {{ 'completed' if period.completed else '' }}">
-                    <div class="timeline-dot"></div>
-                    
                     <div class="period-header">
                         <div class="period-title-container">
                             <form class="checkbox-form {{ 'completed' if period.completed else '' }}" method="POST" action="/toggle-period/{{ goal.id }}/{{ period.period_number }}">
