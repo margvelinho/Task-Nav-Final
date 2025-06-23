@@ -1,39 +1,80 @@
-TASKNAV
-🔧How to Set Up This Project:
+Hi there! 👋
+This guide will help you set up TaskNav, a cool Python web app.
 
 
-### 📥 1. Download the Project
+🖥️ Step 1: Install Visual Studio Code (VS Code)
+Visual Studio Code is like a special notebook where you write code.
 
-Open your terminal and run the following commands to clone the project and enter the project folder:
+👉 To install it:
+Go to this website: https://code.visualstudio.com/
 
-```bash
+Click the Download button for your computer (Windows, Mac, or Linux).
+
+Open the downloaded file and follow the instructions to install it.
+
+Once it's done, open VS Code!
+
+
+🐍 Step 2: Install Python
+Python is the language this app uses!
+
+Go to https://www.python.org/downloads/
+
+Click Download Python (choose the latest version).
+
+Open the file and install it. Make sure to check the box that says ✅ "Add Python to PATH" before clicking "Install."
+
+📂 Step 3: Get the Project
+Open VS Code
+
+Press Ctrl ~ to open the Terminal (a black box at the bottom)
+
+Copy and paste this one at a time:
+
 git clone https://github.com/margvelinho/TaskNav.git
+
 cd TaskNav
 
-Enter this in the Terminal: pip install python-dotenv
+This gets the project onto your computer.
+
+📦 Step 4: Install the Tools (Packages)
+if you dont have flask installed:
+in the terminal enter: pip install flask
+Still in the terminal, type this:
+  pip install python-dotenv
+  
+This installs something that helps hide secret codes (called environment variables).
 
 
-Make sure you have Python installed
+🔐 Step 5: Add Your API Key and Secret Key
+In the TaskNav folder, create a new file named .env
 
-3. Set Up Environment Variables
-Create a .env file in the root directory and add your OpenRouter API key like this:
+Inside that file, add this line (replace with your real key):
 
+env file:
 API_KEY=your_openrouter_api_key_here
-👉 You can get a free API key from: https://openrouter.ai
 
-🔐 Generate a Secret Key
+👉 You can get a free API key here: https://openrouter.ai
+Create an account then on the right top of the screen click on the accound, you will se "key", click it and create new API Key.
 
-You need a `FLASK_SECRET_KEY` for Flask session security.  
-You can generate one by running this in Python:
+You also need a FLASK_SECRET_KEY. This is like a secret password that helps keep your website safe.
 
-```python
-import secrets
-print(secrets.token_hex(16))
-Then, copy the result into your .env file like this:
-FLASK_SECRET_KEY=your_generated_key_here
+To make one, just run the .py file,
 
-4.Run the App
+You’ll see a long string of letters and numbers, like:
+e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2
 
-python app.py
+Copy that string and add it to your .env file like this:
 
-The Flask app should now be running at http://localhost:5000/.
+FLASK_SECRET_KEY=e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2
+🧠 What does this do?
+This line gives Flask (the tool that runs the website) a secret code to keep your sessions safe and secure.
+
+🚀 Step 6: Run the App!
+Now run app.py
+
+Running on http://localhost:5000/
+
+🎉 Go to your web browser and visit: http://localhost:5000
+
+Your TaskNav app is live!
