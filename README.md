@@ -24,20 +24,27 @@ Click Download Python (choose the latest version).
 
 Open the file and install it. Make sure to check the box that says ✅ "Add Python to PATH" before clicking "Install."
 
-📂 Step 3: Get the Project
-Open VS Code
+📁 Step 3: Download the TaskNav Project
+Go to this page: https://github.com/margvelinho/TaskNav
 
-Press Ctrl ~ to open the Terminal (a black box at the bottom)
+Click the green "Code" button
 
-Copy and paste this one at a time:
+Choose "Download ZIP"
 
-git clone https://github.com/margvelinho/TaskNav.git
+Once it finishes, find the ZIP file and right-click > Extract (unzip it)
 
-cd TaskNav
+You’ll now see a folder called TaskNav-main
 
-This gets the project onto your computer.
+🧑‍💻 Step 4: Open the Project in VS Code
+Open Visual Studio Code
 
-📦 Step 4: Install the Tools (Packages)
+Click File > Open Folder...
+
+Choose the TaskNav-main folder you just unzipped
+
+✅ Now you’re inside the project!
+
+📦 Step 5: Install the Tools (Packages)
 if you dont have flask installed:
 in the terminal enter: pip install flask
 Still in the terminal, type this:
@@ -46,7 +53,7 @@ Still in the terminal, type this:
 This installs something that helps hide secret codes (called environment variables).
 
 
-🔐 Step 5: Add Your API Key and Secret Key
+🔐 Step 6: Add Your API Key and Secret Key
 In the TaskNav folder, create a new file named .env
 
 Inside that file, add this line (replace with your real key):
