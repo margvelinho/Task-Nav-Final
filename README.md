@@ -69,11 +69,11 @@ You also need a FLASK_SECRET_KEY. This is like a secret password that helps keep
 To make one, just run the .py file,
 
 You’ll see a long string of letters and numbers, like:
-e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2
+e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2(this is not the code you should use)
 
 Copy that string and add it to your .env file like this:
 
-FLASK_SECRET_KEY=e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2
+FLASK_SECRET_KEY=e2f4a8c5f1d2b3c9e7a1f3e9b0c7d1a2(this is not the code you should use)
 🧠 What does this do?
 This line gives Flask (the tool that runs the website) a secret code to keep your sessions safe and secure.
 
