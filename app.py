@@ -17,6 +17,9 @@ OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 def query_openrouter_ai(prompt):
     """Query OpenRouter AI with improved response handling"""
     try:
+        if not OPENROUTER_API_KEY:
+            return "Error: API key not configured"
+            
         system_prompt = """You are an expert study planner. Create detailed study plans in this EXACT format:
 
 PERIOD 1: Introduction and Foundation
@@ -49,21 +52,31 @@ Continue this exact pattern. Each PERIOD must have exactly 3 TASKs and each TASK
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.1,
-            "max_tokens": 3000
+            "max_tokens": 20000
         }
         
-        response = requests.post(OPENROUTER_API_URL, headers=headers, json=payload)
+        response = requests.post(OPENROUTER_API_URL, headers=headers, json=payload, timeout=30)
         response.raise_for_status()
         
         data = response.json()
+        if 'choices' not in data or not data['choices']:
+            return "Error: Invalid API response format"
+            
         ai_response = data['choices'][0]['message']['content'].strip()
-        print(f"AI RESPONSE DEBUG: {ai_response[:500]}...")  # Debug line
+        print(f"AI RESPONSE DEBUG: {ai_response[:500]}...")
         return ai_response
         
+    except requests.exceptions.Timeout:
+        return "Error: API request timed out"
+    except requests.exceptions.RequestException as e:
+        print(f"OpenRouter API Request Error: {str(e)}")
+        return f"Error: Network error - {str(e)}"
+    except KeyError as e:
+        print(f"OpenRouter API Response Error: {str(e)}")
+        return f"Error: Invalid API response - {str(e)}"
     except Exception as e:
         print(f"OpenRouter API Error: {str(e)}")
         return f"Error: Could not generate plan - {str(e)}"
-    
 
 def get_study_plan(goal, deadline, period):
     """Generate AI study plan with better prompting"""
@@ -86,6 +99,16 @@ def get_study_plan(goal, deadline, period):
     else:
         total_periods = max((days_left // 365) + 1, 1)  
         time_unit = "year"
+    
+    if total_periods > 100:  
+        if period == "daily":
+            period = "weekly"  
+            total_periods = max((days_left // 7) + 1, 1)
+            time_unit = "week"
+        elif period == "weekly" and total_periods > 52:
+            period = "monthly"  
+            total_periods = max((days_left // 30) + 1, 1)
+            time_unit = "month"
     
     prompt = f"""Create a {total_periods}-{time_unit} study plan to achieve: "{goal}"
 
@@ -110,9 +133,16 @@ Make each task specific to achieving "{goal}" with real, actionable steps."""
     return ai_response
 
 
+def calculate_days_remaining(deadline_str):
+    try:
+        today = datetime.date.today()
+        deadline = datetime.datetime.strptime(deadline_str, "%Y-%m-%d").date()
+        return max(0, (deadline - today).days)  
+    except:
+        return 0
+
 def parse_ai_response_to_timeline(ai_response, period, start_date, end_date, goal_text="your goal"):
-    """Create timeline from AI response with debugging"""
-    timeline = []
+    """Create timeline from AI response with improved parsing"""
     
     try:
         start = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
@@ -121,23 +151,38 @@ def parse_ai_response_to_timeline(ai_response, period, start_date, end_date, goa
         start = datetime.date.today()
         end = start + datetime.timedelta(days=30)
     
-    extracted_tasks = extract_all_tasks_from_ai_response(ai_response)
+
+    extracted_tasks = parse_structured_response(ai_response)
     print(f"Extracted tasks: {extracted_tasks}")
     
-    if period == "daily":
-        total_days = (end - start).days + 1
-        periods = total_days  
-    elif period == "weekly":
-        total_weeks = ((end - start).days // 7) + 1
-        periods = total_weeks  
-    elif period == "monthly":
-        total_months = ((end.year - start.year) * 12) + (end.month - start.month) + 1
-        periods = total_months 
-    else:  
-        periods = (end.year - start.year) + 1 
+    if extracted_tasks:
+        return create_timeline_from_parsed_tasks(extracted_tasks, period, start_date, end_date, goal_text)
     
-  
-    for i in range(periods):
+    return create_basic_timeline(ai_response, period, start_date, end_date, goal_text)
+
+def create_basic_timeline(ai_response, period, start_date, end_date, goal_text):
+    """Create a basic timeline when parsing fails"""
+    try:
+        start = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
+        end = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+    except ValueError:
+        start = datetime.date.today()
+        end = start + datetime.timedelta(days=30)
+    
+    if period == "daily":
+        total_periods = min((end - start).days + 1, 30)  
+    elif period == "weekly":
+        total_periods = min(((end - start).days // 7) + 1, 12)  
+    elif period == "monthly":
+        total_periods = min(((end.year - start.year) * 12) + (end.month - start.month) + 1, 6)  
+    else:
+        total_periods = min((end.year - start.year) + 1, 3)  
+    
+    timeline = []
+    
+    text_chunks = ai_response.split('\n\n') if '\n\n' in ai_response else [ai_response]
+    
+    for i in range(total_periods):
         period_num = i + 1
         
         if period == "daily":
@@ -158,41 +203,59 @@ def parse_ai_response_to_timeline(ai_response, period, start_date, end_date, goa
             month_date = datetime.date(target_year, target_month, 1)
             period_date = month_date.strftime("%B %Y")
             period_label = f"Month {period_num}"
-        else:  
+        else:
             period_date = str(start.year + i)
             period_label = f"Year {period_num}"
         
-        if isinstance(extracted_tasks, dict) and period_num in extracted_tasks:
-            tasks = extracted_tasks[period_num]
-            task_objects = []
-            for i_task, task_text in enumerate(tasks):
-                if len(task_text.strip()) > 10:
-                    task_objects.append({
-                        'id': f"task_{period_num}_{i_task+1}",
-                        'text': task_text.strip(),
-                        'completed': False
-                    })
-        else:
-            continue
+        tasks = []
+        if i < len(text_chunks) and text_chunks[i].strip():
+            chunk = text_chunks[i].strip()
+            sentences = [s.strip() for s in chunk.split('.') if s.strip() and len(s.strip()) > 15]
+            
+            for j, sentence in enumerate(sentences[:3]):  
+                tasks.append({
+                    'id': f"task_{period_num}_{j+1}",
+                    'text': sentence,
+                    'completed': False
+                })
+        
+        if not tasks:
+            tasks = [
+                {
+                    'id': f"task_{period_num}_1",
+                    'text': f"Research and study fundamentals for {goal_text}",
+                    'completed': False
+                },
+                {
+                    'id': f"task_{period_num}_2", 
+                    'text': f"Practice key skills related to {goal_text}",
+                    'completed': False
+                },
+                {
+                    'id': f"task_{period_num}_3",
+                    'text': f"Apply learned concepts and track progress for {goal_text}",
+                    'completed': False
+                }
+            ]
         
         timeline.append({
             'period_number': period_num,
             'period_label': period_label,
             'period_date': period_date,
-            'tasks': task_objects,
+            'tasks': tasks,
             'completed': False
         })
     
     return timeline
 
 def parse_structured_response(response_text):
-    """Improved parsing that actually works"""
+    """Improved parsing that handles all AI response formats"""
     periods = {}
     current_period = None
     current_tasks = []
     
     lines = response_text.split('\n')
-    print(f"PARSING {len(lines)} lines")  # Debug
+    print(f"PARSING {len(lines)} lines")
     
     i = 0
     while i < len(lines):
@@ -201,36 +264,43 @@ def parse_structured_response(response_text):
             i += 1
             continue
             
-        period_match = re.match(r'PERIOD\s+(\d+):', line, re.IGNORECASE)
+        period_match = re.match(r'(?:PERIOD\s+(\d+)|(\d+)\.|\*\*PERIOD\s+(\d+)|Week\s+(\d+)|Month\s+(\d+)|Day\s+(\d+)|Year\s+(\d+))', line, re.IGNORECASE)
         if period_match:
-            if current_period is not None and current_tasks:
-                periods[current_period] = current_tasks
-                print(f"Saved period {current_period} with {len(current_tasks)} tasks")
+            period_num = None
+            for group in period_match.groups():
+                if group:
+                    period_num = int(group)
+                    break
             
-            current_period = int(period_match.group(1))
-            current_tasks = []
-            print(f"Found period {current_period}: {line}")
-            i += 1
-            continue
+            if period_num:
+                if current_period is not None and current_tasks:
+                    periods[current_period] = current_tasks
+                    print(f"Saved period {current_period} with {len(current_tasks)} tasks")
+                
+                current_period = period_num
+                current_tasks = []
+                print(f"Found period {current_period}: {line}")
         
-        task_match = re.match(r'TASK:\s*(.+)', line, re.IGNORECASE)
-        if task_match and current_period is not None:
-            task_text = task_match.group(1).strip()
+        elif re.match(r'(?:TASK:|[-•*]\s*|^\d+\.\s*)', line, re.IGNORECASE) and current_period is not None:
+            task_text = re.sub(r'^(?:TASK:\s*|[-•*]\s*|\d+\.\s*)', '', line, flags=re.IGNORECASE).strip()
             
             resources_text = ""
-            if i + 1 < len(lines):
-                next_line = lines[i + 1].strip()
-                resource_match = re.match(r'RESOURCES:\s*(.+)', next_line, re.IGNORECASE)
-                if resource_match:
-                    resources_text = resource_match.group(1).strip()
-                    i += 1  
+            for j in range(i + 1, min(i + 3, len(lines))):
+                next_line = lines[j].strip()
+                if re.match(r'RESOURCES:\s*(.+)', next_line, re.IGNORECASE):
+                    resources_text = re.sub(r'^RESOURCES:\s*', '', next_line, flags=re.IGNORECASE).strip()
+                    break
+                elif next_line and not re.match(r'(?:PERIOD|TASK:|[-•*]|\d+\.)', next_line, re.IGNORECASE):
+                    
+                    resources_text = next_line
+                    break
             
-            full_task = task_text
-            if resources_text:
-                full_task += f" | Resources: {resources_text}"
-            
-            current_tasks.append(full_task)
-            print(f"Added task: {full_task[:100]}...")
+            if task_text:
+                full_task = task_text
+                if resources_text:
+                    full_task += f" | Resources: {resources_text}"
+                current_tasks.append(full_task)
+                print(f"Added task: {full_task[:100]}...")
         
         i += 1
     
@@ -238,8 +308,94 @@ def parse_structured_response(response_text):
         periods[current_period] = current_tasks
         print(f"Saved final period {current_period} with {len(current_tasks)} tasks")
     
+    if not periods:
+        periods = fallback_text_parsing(response_text)
+    
     print(f"FINAL PARSED PERIODS: {list(periods.keys())}")
     return periods
+
+def fallback_text_parsing(text):
+    """Fallback parser for unstructured AI responses"""
+    periods = {}
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    
+    if not lines:
+        return periods
+    
+    chunks = []
+    current_chunk = []
+    
+    for line in lines:
+        if any(keyword in line.lower() for keyword in ['week', 'month', 'day', 'phase', 'step', 'period', 'stage']):
+            if current_chunk:
+                chunks.append('\n'.join(current_chunk))
+                current_chunk = []
+        current_chunk.append(line)
+    
+    if current_chunk:
+        chunks.append('\n'.join(current_chunk))
+    
+    if len(chunks) < 2:
+        chunk_size = max(1, len(lines) // 3) 
+        chunks = []
+        for i in range(0, len(lines), chunk_size):
+            chunk_lines = lines[i:i+chunk_size]
+            if chunk_lines:
+                chunks.append('\n'.join(chunk_lines))
+    
+    for i, chunk in enumerate(chunks[:10]):  
+        period_num = i + 1
+        tasks = []
+        sentences = [s.strip() for s in chunk.replace('\n', '. ').split('.') if s.strip() and len(s.strip()) > 10]
+        
+        for sentence in sentences[:3]:
+            if len(sentence) > 20:  
+                tasks.append(sentence)
+        
+        if not tasks and chunk:
+            tasks = [chunk[:200] + '...' if len(chunk) > 200 else chunk]
+        
+        if tasks:
+            periods[period_num] = tasks
+    
+    return periods
+
+def ensure_timeline_data(goal_data):
+    """Ensure timeline_data exists and is properly formatted"""
+    if not goal_data.get('timeline_data'):
+        study_plan = goal_data.get('study_plan', '')
+        if study_plan:
+            parsed_tasks = parse_structured_response(study_plan)
+            if parsed_tasks:
+                today = datetime.date.today().strftime("%Y-%m-%d")
+                deadline = goal_data.get('deadline', today)
+                period = goal_data.get('period', 'weekly')
+                goal_text = goal_data.get('goal_text', 'your goal')
+                
+                timeline_data = create_timeline_from_parsed_tasks(
+                    parsed_tasks, period, today, deadline, goal_text
+                )
+                goal_data['timeline_data'] = timeline_data
+                
+                if goal_data.get('id'):
+                    update_timeline_in_db(goal_data['id'], timeline_data)
+    
+    return goal_data
+
+def update_timeline_in_db(goal_id, timeline_data):
+    """Update timeline data in database"""
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    
+    timeline_json = json.dumps(timeline_data) if timeline_data else None
+    cursor.execute("""
+        UPDATE goals 
+        SET timeline_data = ? 
+        WHERE id = ?
+    """, (timeline_json, goal_id))
+    
+    conn.commit()
+    conn.close()
 
 def get_tasks_for_period(all_tasks_by_period, period_num, total_periods, goal_text="your goal"):
     """Get tasks - CHANGED: Only return AI-generated tasks, no fallbacks"""
@@ -261,40 +417,7 @@ def get_tasks_for_period(all_tasks_by_period, period_num, total_periods, goal_te
         
         return task_objects
     
-    return []
     
-    print(f"Generating fallback tasks for period {period_num}")
-    fallback_prompt = f"""Create 3 specific tasks for period {period_num} of {total_periods} to achieve: "{goal_text}"
-
-Format each as:
-TASK: [Specific actionable task]
-RESOURCES: [Specific resources]
-
-Make them detailed and practical for someone working toward: {goal_text}"""
-    
-    try:
-        fallback_response = query_groq_ai_improved(fallback_prompt)
-        fallback_tasks = []
-        
-        for line in fallback_response.split('\n'):
-            if line.strip().upper().startswith('TASK:'):
-                task_text = re.sub(r'^TASK:\s*', '', line.strip(), flags=re.IGNORECASE)
-                if len(task_text) > 10:
-                    fallback_tasks.append(task_text)
-        
-        if fallback_tasks:
-            task_objects = []
-            for i, task_text in enumerate(fallback_tasks[:3]):
-                task_objects.append({
-                    'id': f"task_{period_num}_{i+1}",
-                    'text': task_text,
-                    'completed': False
-                })
-            return task_objects
-    except:
-        pass
-    
-    # Final fallback
     return [{
         'id': f"task_{period_num}_1",
         'text': f"Research best practices and resources for {goal_text}",
@@ -312,9 +435,8 @@ Make them detailed and practical for someone working toward: {goal_text}"""
 
 
 
-
 def extract_all_tasks_from_ai_response(ai_response):
-    """Extract tasks using the improved parser"""
+    """Extract tasks using the improved parser with fallback"""
     return parse_structured_response(ai_response)
 
 
@@ -444,6 +566,8 @@ def get_user_goals(user_id):
                 except (json.JSONDecodeError, TypeError):
                     goal['timeline_data'] = None
             
+            goal = ensure_timeline_data(goal)
+            
             goals.append(goal)
             
         except Exception as e:
@@ -484,25 +608,14 @@ def get_goal_by_id(goal_id, user_id):
                 'status': goal_data[7] if len(goal_data) > 7 else 'active',
                 'days_remaining': calculate_days_remaining(goal_data[2] if len(goal_data) > 2 else '2024-12-31')
             }
-            return goal
             
+            goal = ensure_timeline_data(goal)
+            
+            return goal 
         except Exception as e:
             return None
     
     return None
-
-def update_goal_status(goal_id, user_id, status):
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    
-    cursor.execute("""
-        UPDATE goals 
-        SET status = ? 
-        WHERE id = ? AND user_id = ?
-    """, (status, goal_id, user_id))
-    
-    conn.commit()
-    conn.close()
 
 def toggle_period_completion(goal_id, user_id, period_number):
     conn = sqlite3.connect('users.db')
@@ -563,6 +676,20 @@ def update_task_status(goal_id, user_id, period_number, task_id, completed):
         
         conn.commit()
     
+    conn.close()
+
+def update_goal_status(goal_id, user_id, status):
+    """Update goal status in database"""
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        UPDATE goals 
+        SET status = ? 
+        WHERE id = ? AND user_id = ?
+    """, (status, goal_id, user_id))
+    
+    conn.commit()
     conn.close()
 
 def init_db():
@@ -811,7 +938,6 @@ def main():
         deadline = request.form.get("deadline", "")
         period = request.form.get("period", "")
         
-        # Basic validation
         if not goal:
             return render_template('main.html', username=session['username'], 
                                  error="Please enter a goal")
@@ -821,6 +947,15 @@ def main():
         if not period:
             return render_template('main.html', username=session['username'], 
                                  error="Please select a time period")
+        
+        try:
+            deadline_date = datetime.datetime.strptime(deadline, "%Y-%m-%d").date()
+            if deadline_date <= datetime.date.today():
+                return render_template('main.html', username=session['username'], 
+                                     error="Deadline must be in the future")
+        except ValueError:
+            return render_template('main.html', username=session['username'], 
+                                 error="Invalid deadline format")
         
         return redirect(url_for('process_goal', goal=goal, deadline=deadline, period=period))
     
@@ -843,15 +978,24 @@ def process_goal():
     if not goal or not deadline or not period:
         return redirect(url_for('main'))
     
-    plan = get_study_plan(goal, deadline, period)
-    
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    timeline_data = parse_ai_response_to_timeline(plan, period, today, deadline, goal)
-    
-    goal_id = save_goal_to_db(session['user_id'], goal, deadline, period, plan, timeline_data)
-    
-    return redirect(url_for('view_goal', goal_id=goal_id))
-
+    try:
+        plan = get_study_plan(goal, deadline, period)
+        
+        if plan.startswith("Error:"):
+            return render_template('main.html', username=session['username'], 
+                                 error=f"Failed to generate study plan: {plan}")
+        
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        timeline_data = parse_ai_response_to_timeline(plan, period, today, deadline, goal)
+        
+        goal_id = save_goal_to_db(session['user_id'], goal, deadline, period, plan, timeline_data)
+        
+        return redirect(url_for('view_goal', goal_id=goal_id))
+        
+    except Exception as e:
+        print(f"Error in process_goal: {str(e)}")
+        return render_template('main.html', username=session['username'], 
+                             error="Failed to process goal. Please try again.")
 @app.route('/my-goals')
 def my_goals():
     if 'username' not in session:
